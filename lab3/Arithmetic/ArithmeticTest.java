@@ -28,8 +28,8 @@ public class ArithmeticTest {
         assertEquals(0, Arithmetic.sum(6, -6));
     }
 
-    /* Run the unit tests in this file. */
-    public static void main(String... args) {        
-        jh61b.junit.TestRunner.runTests("all", ArithmeticTest.class);
-    }
+//    /* Run the unit tests in this file. */
+//    public static void main(String... args) {
+//        jh61b.junit.TestRunner.runTests("all", ArithmeticTest.class);
+//    }
 }
