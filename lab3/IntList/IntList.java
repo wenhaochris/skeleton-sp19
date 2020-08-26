@@ -206,6 +206,21 @@ public class IntList {
             }
         }
     }
+    public static IntList reverse(IntList A){
+        if(A == null){
+            return null;
+        }
+        IntList ptr =  A.rest;
+        A.rest = null;
+
+        while(ptr != null){
+            IntList temp = ptr.rest;
+            ptr.rest = A;
+            A = ptr;
+            ptr = temp;
+        }
+        return A;
+    }
 
     @Override
     /** Outputs the IntList as a String. You are not expected to read
