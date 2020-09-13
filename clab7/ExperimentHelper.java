@@ -15,8 +15,35 @@ public class ExperimentHelper {
      *  N = 8, OIPL: 13
      */
     public static int optimalIPL(int N) {
-        return 0;
+//        brute-force  get optimalIPL
+        int result = 0;
+        int temp = N;
+        int layer = 0;
+
+
+        while(temp != 1){
+            layer ++;
+            temp /= 2;
+        }
+
+        for(int i = 0; i < layer; i++){
+            result += (int)Math.pow(2, i) * i;
+        }
+        result += (N - (int) Math.pow(2, layer) + 1) * layer;
+        return result;
+//        recursion
+//        if(N == 1 || N == 0){
+//            return 0;
+//        }
+//        int plus = (int)log(2, N);
+//        return plus + optimalIPL(N - 1);
+
     }
+
+//
+//    private static  double log(int base, int x){
+//        return Math.log(x) / Math.log(base);
+//    }
 
     /** Returns the average depth for nodes in an optimal BST of
      *  size N.
@@ -27,6 +54,18 @@ public class ExperimentHelper {
      * @return
      */
     public static double optimalAverageDepth(int N) {
-        return 0;
+        return (double)optimalIPL(N) / (double) N;
+    }
+
+    public static void getInt(BST<Integer> T){
+        int temp = RandomGenerator.getRandomInt(10000);
+        while (true){
+            if(!T.contains(temp)){
+                T.add(temp);
+                break;
+            }else{
+                temp = RandomGenerator.getRandomInt(10000);
+            }
+        }
     }
 }
