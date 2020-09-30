@@ -24,7 +24,26 @@ public class SeparableEnemySolver {
      */
     public boolean isSeparable() {
         // TODO: Fix me
-        return false;
+        HashMap<String, Integer> groups = new HashMap<>();
+        int group = 1;
+        for(String label : g.labels()){
+            if(groups.containsKey(label)) continue;
+            if(!dfs(label,groups,group)) return false;
+        }
+        return true;
+    }
+
+    private boolean dfs(String label, HashMap<String, Integer> groups, int group){
+        if(groups.containsKey(label)){
+            return groups.get(label).equals(group);
+        }
+
+        groups.put(label,group);
+        for(String neighbor : g.neighbors(label)){
+            if (groups.containsKey(neighbor) && !groups.get(neighbor).equals(group)) continue;
+            if(!dfs(neighbor, groups, -1 * group)) return false;
+        }
+        return true;
     }
 
 
