@@ -1,5 +1,7 @@
 import edu.princeton.cs.algs4.Queue;
 
+import java.util.Iterator;
+
 public class MergeSort {
     /**
      * Removes and returns the smallest item that is in q1 or q2.
@@ -42,8 +44,16 @@ public class MergeSort {
      */
     private static <Item extends Comparable> Queue<Queue<Item>>
             makeSingleItemQueues(Queue<Item> items) {
+
         // Your code here!
-        return null;
+        Iterator<Item> iterator = items.iterator();
+        Queue<Queue<Item>> res = new Queue<>();
+        while (iterator.hasNext()){
+            Queue<Item> temp = new Queue<>();
+            temp.enqueue(iterator.next());
+            res.enqueue(temp);
+        }
+        return res;
     }
 
     /**
@@ -62,7 +72,11 @@ public class MergeSort {
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2) {
         // Your code here!
-        return null;
+        Queue<Item> res = new Queue<>();
+        while(!q1.isEmpty() || !q2.isEmpty()){
+            res.enqueue(getMin(q1, q2));
+        }
+        return res;
     }
 
     /**
@@ -78,6 +92,45 @@ public class MergeSort {
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
         // Your code here!
+        if(items.size() == 2){
+            Queue<Queue<Item>> temp =  makeSingleItemQueues(items);
+            return mergeSortedQueues(temp.dequeue(),temp.dequeue());
+        }
+
+        if(items.size() == 1){
+            return items;
+        }
+
+        Queue<Item> temp1 = new Queue<>();
+        Queue<Item> temp2 = new Queue<>();
+
+        int half = items.size()/2;
+        int size = items.size();
+        for(int i = 0; i < half; i++){
+            temp1.enqueue(items.dequeue());
+        }
+        for(int i = half; i < size; i++){
+            temp2.enqueue(items.dequeue());
+        }
+//        int half = items.size() / 2;
+//        int size = items.size();
+//        for (int i = 0; i < half; i++) {
+//            temp1.enqueue(items.dequeue());
+//        }
+//        for (int i = half; i < size; i++) {
+//            temp2.enqueue(items.dequeue());
+//        }
+
+        temp1 = mergeSort(temp1);
+        temp2 = mergeSort(temp2);
+
+        temp2 = mergeSortedQueues(temp1, temp2);
+
+        while(!temp2.isEmpty()){
+            items.enqueue(temp2.dequeue());
+        }
+
+
         return items;
     }
 }
