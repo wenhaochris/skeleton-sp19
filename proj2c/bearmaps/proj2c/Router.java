@@ -1,5 +1,10 @@
 package bearmaps.proj2c;
 
+import bearmaps.hw4.WeightedEdge;
+import bearmaps.hw4.WeirdSolver;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -24,10 +29,10 @@ public class Router {
      */
     public static List<Long> shortestPath(AugmentedStreetMapGraph g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        //long src = g.closest(stlon, stlat);
-        //long dest = g.closest(destlon, destlat);
-        //return new WeirdSolver<>(g, src, dest, 20).solution();
-        return null;
+        long src = g.closest(stlon, stlat);
+        long dest = g.closest(destlon, destlat);
+        return new WeirdSolver<>(g, src, dest, 20).solution();
+//        return null;
     }
 
     /**
@@ -40,7 +45,67 @@ public class Router {
      */
     public static List<NavigationDirection> routeDirections(AugmentedStreetMapGraph g, List<Long> route) {
         /* fill in for part IV */
-        return null;
+        if(route == null || route.size() < 2){
+            return null;
+        }
+        List<NavigationDirection> results = new ArrayList<>();
+
+        Iterator<Long> routeIter = route.iterator();
+
+        long pre = routeIter.next();
+        long cur = routeIter.next();
+
+        NavigationDirection nd = new NavigationDirection();
+        nd.direction = NavigationDirection.START;
+        nd.distance = -1.0;
+
+        for(WeightedEdge<Long> we : g.neighbors(pre)){
+            if(we.to() == cur){
+                nd.way = (we.getName() == null) ? NavigationDirection.UNKNOWN_ROAD : we.getName();
+                nd.distance = we.weight();
+                break;
+            }
+        }
+        if(nd.distance == -1.0){
+            throw new IllegalArgumentException("Invalid route");
+        }
+
+        if(!routeIter.hasNext()){
+            results.add(nd);
+            return results;
+        }
+
+        while(routeIter.hasNext()){
+            long next = routeIter.next();
+
+            WeightedEdge<Long> we = null;
+
+            for(WeightedEdge<Long> weightedEdge : g.neighbors(cur)){
+                if(weightedEdge.to() == next){
+                    we = weightedEdge;
+                    break;
+                }
+            }
+
+            if(we == null){
+                throw new IllegalArgumentException("Invalid route.");
+            }
+
+            if((we.getName() == null && !nd.way.equals(NavigationDirection.UNKNOWN_ROAD)) || (we.getName() != null && !we.getName().equals(nd.way) )){
+                results.add(nd);
+
+                nd = new NavigationDirection();
+                nd.direction = NavigationDirection.getDirection(NavigationDirection.bearing(g.lon(pre), g.lon(cur), g.lat(pre), g.lat(cur)), NavigationDirection.bearing(g.lon(cur), g.lon(next),g.lat(cur), g.lat(next)));
+                nd.way = (we.getName() == null) ? NavigationDirection.UNKNOWN_ROAD : we.getName();
+                nd.distance = we.weight();
+            }else{
+                nd.distance += we.weight();
+            }
+            pre = cur;
+            cur = next;
+        }
+        results.add(nd);
+        return results;
     }
 
     /**
